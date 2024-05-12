@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package grpc;
+
+option go_package = "./proto";
+
+// El servicio que maneja las solicitudes relacionadas con el piso.
+service KFservice {
+  // SolicitarEntrarPiso es el método para solicitar entrar al piso.
+  rpc SolicitarEntrarPiso(EntrarPisoRequest) returns (EstadoPisoUpdate);
+  
+  // SolicitarMovimiento es el método para solicitar un movimiento en el piso.
+  rpc SolicitarMovimiento(MovimientoRequest) returns (MovimientoRequest);
+
+  // ActualizarEstadoPiso es el método para actualizar el estado del piso.
+  rpc ActualizarEstadoPiso(EstadoPisoUpdate) returns (EstadoUpdateResponse);
+
+  // SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
+  rpc SolicitarMontoDineroMercenarioDirector(MontoDineroMercenarioDirectorRequest) returns (MontoDineroResponse);
+
+  // SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
+  rpc SolicitarMontoDineroDirectorBanco(MontoDineroDirectorBancoRequest) returns (MontoDineroResponse);
+
+  // SolicitarRegistroDataName es el método para solicitar registro de DataName.
+  rpc SolicitarRegistroDataName(RegistroDataNameRequest) returns (RegistroDataNameResponse);
+
+  // SolicitarRegistroNodo es el método para solicitar registro a nodo.
+  rpc SolicitarRegistroNodo(RegistroNodoRequest) returns (RegistroNodoResponse);
+}
+
+// EntrarPisoRequest es la solicitud para entrar al piso.
+message EntrarPisoRequest {
+  int32 estado = 1;  // El estado de la solicitud.
+  int32 iD = 2;      // El identificador.
+  string nombre = 3; // El nombre.
+}
+
+// MovimientoRequest es la solicitud para un movimiento en el piso.
+message MovimientoRequest {
+  int32 piso = 1; // El piso solicitado.
+}
+
+// EstadoPisoUpdate es la actualización del estado del piso.
+message EstadoPisoUpdate {
+  int32 estado = 1; // El nuevo estado del piso.
+}
+
+// MontoDineroMercenarioDirectorRequest es la solicitud para obtener el monto de dinero entre el mercenario y el director.
+message MontoDineroMercenarioDirectorRequest {
+  int32 iD = 1;      // El identificador.
+  string nombre = 2; // El nombre.
+}
+
+// MontoDineroDirectorBancoRequest es la solicitud para obtener el monto de dinero entre el director y el banco.
+message MontoDineroDirectorBancoRequest {}
+
+// RegistroDataNameRequest es la solicitud para registrar DataName.
+message RegistroDataNameRequest {
+  int32 iD = 1;      // El identificador.
+  int32 piso = 2;    // El piso.
+  string nombre = 3; // El nombre.
+}
+
+// RegistroDataNameResponse es la respuesta a la solicitud de registro de DataName.
+message RegistroDataNameResponse {
+  bool success = 1; // True si el registro fue exitoso, false en caso contrario.
+}
+
+// RegistroNodoRequest es la solicitud para registrar un nodo.
+message RegistroNodoRequest {
+  int32 iD = 1;      // El identificador.
+  int32 piso = 2;    // El piso.
+  string nombre = 3; // El nombre.
+}
+
+// RegistroNodoResponse es la respuesta a la solicitud de registro de un nodo.
+message RegistroNodoResponse {
+  bool success = 1; // True si el registro fue exitoso, false en caso contrario.
+}
+
+// EstadoUpdateResponse es la respuesta a una actualización de estado.
+message EstadoUpdateResponse {
+  bool success = 1; // True si la actualización fue exitosa, false en caso contrario.
+}
+
+// MontoDineroResponse es la respuesta a la solicitud de monto de dinero.
+message MontoDineroResponse {
+  double amount = 1; // El monto de dinero.
+}
+
