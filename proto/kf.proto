@@ -48,10 +48,10 @@ message MovimientoRequest {
 
 // MovimientoResponse es el resultado de un movimiento.
 message MovimientoResponse {
-  int32 iD = 2;      // El identificador.
-  string nombre = 3; // El nombre.
-  int32 piso = 4;    // El Piso a cual entrar
-  int32 mov = 5;     // Movimiento del jugador
+  int32 iD = 1;      // El identificador.
+  string nombre = 2; // El nombre.
+  int32 piso = 3;    // El Piso a cual entrar
+  int32 mov = 4;     // Movimiento del jugador
 }
 
 message ResultadoResponse {
