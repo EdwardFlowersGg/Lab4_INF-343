@@ -23,11 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KFserviceClient interface {
 	// SolicitarEntrarPiso es el método para solicitar entrar al piso.
-	SolicitarEntrarPiso(ctx context.Context, in *EntrarPisoRequest, opts ...grpc.CallOption) (*EstadoPisoUpdate, error)
+	SolicitarEntrarPiso(ctx context.Context, in *EntrarPisoRequest, opts ...grpc.CallOption) (*EntrarPisoResponse, error)
 	// SolicitarMovimiento es el método para solicitar un movimiento en el piso.
-	SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoRequest, error)
-	// ActualizarEstadoPiso es el método para actualizar el estado del piso.
-	ActualizarEstadoPiso(ctx context.Context, in *EstadoPisoUpdate, opts ...grpc.CallOption) (*EstadoUpdateResponse, error)
+	SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoResponse, error)
 	// SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
 	SolicitarMontoDineroMercenarioDirector(ctx context.Context, in *MontoDineroMercenarioDirectorRequest, opts ...grpc.CallOption) (*MontoDineroResponse, error)
 	// SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
@@ -35,7 +33,7 @@ type KFserviceClient interface {
 	// SolicitarRegistroDataName es el método para solicitar registro de DataName.
 	SolicitarRegistroDataName(ctx context.Context, in *RegistroDataNameRequest, opts ...grpc.CallOption) (*RegistroDataNameResponse, error)
 	// SolicitarRegistroNodo es el método para solicitar registro a nodo.
-	SolicitarRegistroNodo(ctx context.Context, in *RegistroNodoRequest, opts ...grpc.CallOption) (*RegistroNodoResponse, error)
+	SolicitarHistorial(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error)
 }
 
 type kFserviceClient struct {
@@ -46,8 +44,8 @@ func NewKFserviceClient(cc grpc.ClientConnInterface) KFserviceClient {
 	return &kFserviceClient{cc}
 }
 
-func (c *kFserviceClient) SolicitarEntrarPiso(ctx context.Context, in *EntrarPisoRequest, opts ...grpc.CallOption) (*EstadoPisoUpdate, error) {
-	out := new(EstadoPisoUpdate)
+func (c *kFserviceClient) SolicitarEntrarPiso(ctx context.Context, in *EntrarPisoRequest, opts ...grpc.CallOption) (*EntrarPisoResponse, error) {
+	out := new(EntrarPisoResponse)
 	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarEntrarPiso", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -55,18 +53,9 @@ func (c *kFserviceClient) SolicitarEntrarPiso(ctx context.Context, in *EntrarPis
 	return out, nil
 }
 
-func (c *kFserviceClient) SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoRequest, error) {
-	out := new(MovimientoRequest)
+func (c *kFserviceClient) SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoResponse, error) {
+	out := new(MovimientoResponse)
 	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarMovimiento", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *kFserviceClient) ActualizarEstadoPiso(ctx context.Context, in *EstadoPisoUpdate, opts ...grpc.CallOption) (*EstadoUpdateResponse, error) {
-	out := new(EstadoUpdateResponse)
-	err := c.cc.Invoke(ctx, "/grpc.KFservice/ActualizarEstadoPiso", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,9 +89,9 @@ func (c *kFserviceClient) SolicitarRegistroDataName(ctx context.Context, in *Reg
 	return out, nil
 }
 
-func (c *kFserviceClient) SolicitarRegistroNodo(ctx context.Context, in *RegistroNodoRequest, opts ...grpc.CallOption) (*RegistroNodoResponse, error) {
-	out := new(RegistroNodoResponse)
-	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarRegistroNodo", in, out, opts...)
+func (c *kFserviceClient) SolicitarHistorial(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error) {
+	out := new(HistorialResponse)
+	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarHistorial", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -114,11 +103,9 @@ func (c *kFserviceClient) SolicitarRegistroNodo(ctx context.Context, in *Registr
 // for forward compatibility
 type KFserviceServer interface {
 	// SolicitarEntrarPiso es el método para solicitar entrar al piso.
-	SolicitarEntrarPiso(context.Context, *EntrarPisoRequest) (*EstadoPisoUpdate, error)
+	SolicitarEntrarPiso(context.Context, *EntrarPisoRequest) (*EntrarPisoResponse, error)
 	// SolicitarMovimiento es el método para solicitar un movimiento en el piso.
-	SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoRequest, error)
-	// ActualizarEstadoPiso es el método para actualizar el estado del piso.
-	ActualizarEstadoPiso(context.Context, *EstadoPisoUpdate) (*EstadoUpdateResponse, error)
+	SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoResponse, error)
 	// SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
 	SolicitarMontoDineroMercenarioDirector(context.Context, *MontoDineroMercenarioDirectorRequest) (*MontoDineroResponse, error)
 	// SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
@@ -126,7 +113,7 @@ type KFserviceServer interface {
 	// SolicitarRegistroDataName es el método para solicitar registro de DataName.
 	SolicitarRegistroDataName(context.Context, *RegistroDataNameRequest) (*RegistroDataNameResponse, error)
 	// SolicitarRegistroNodo es el método para solicitar registro a nodo.
-	SolicitarRegistroNodo(context.Context, *RegistroNodoRequest) (*RegistroNodoResponse, error)
+	SolicitarHistorial(context.Context, *HistorialRequest) (*HistorialResponse, error)
 	mustEmbedUnimplementedKFserviceServer()
 }
 
@@ -134,14 +121,11 @@ type KFserviceServer interface {
 type UnimplementedKFserviceServer struct {
 }
 
-func (UnimplementedKFserviceServer) SolicitarEntrarPiso(context.Context, *EntrarPisoRequest) (*EstadoPisoUpdate, error) {
+func (UnimplementedKFserviceServer) SolicitarEntrarPiso(context.Context, *EntrarPisoRequest) (*EntrarPisoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarEntrarPiso not implemented")
 }
-func (UnimplementedKFserviceServer) SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoRequest, error) {
+func (UnimplementedKFserviceServer) SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarMovimiento not implemented")
-}
-func (UnimplementedKFserviceServer) ActualizarEstadoPiso(context.Context, *EstadoPisoUpdate) (*EstadoUpdateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ActualizarEstadoPiso not implemented")
 }
 func (UnimplementedKFserviceServer) SolicitarMontoDineroMercenarioDirector(context.Context, *MontoDineroMercenarioDirectorRequest) (*MontoDineroResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarMontoDineroMercenarioDirector not implemented")
@@ -152,8 +136,8 @@ func (UnimplementedKFserviceServer) SolicitarMontoDineroDirectorBanco(context.Co
 func (UnimplementedKFserviceServer) SolicitarRegistroDataName(context.Context, *RegistroDataNameRequest) (*RegistroDataNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarRegistroDataName not implemented")
 }
-func (UnimplementedKFserviceServer) SolicitarRegistroNodo(context.Context, *RegistroNodoRequest) (*RegistroNodoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SolicitarRegistroNodo not implemented")
+func (UnimplementedKFserviceServer) SolicitarHistorial(context.Context, *HistorialRequest) (*HistorialResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarHistorial not implemented")
 }
 func (UnimplementedKFserviceServer) mustEmbedUnimplementedKFserviceServer() {}
 
@@ -200,24 +184,6 @@ func _KFservice_SolicitarMovimiento_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(KFserviceServer).SolicitarMovimiento(ctx, req.(*MovimientoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _KFservice_ActualizarEstadoPiso_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EstadoPisoUpdate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KFserviceServer).ActualizarEstadoPiso(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.KFservice/ActualizarEstadoPiso",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KFserviceServer).ActualizarEstadoPiso(ctx, req.(*EstadoPisoUpdate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -276,20 +242,20 @@ func _KFservice_SolicitarRegistroDataName_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _KFservice_SolicitarRegistroNodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegistroNodoRequest)
+func _KFservice_SolicitarHistorial_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HistorialRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KFserviceServer).SolicitarRegistroNodo(ctx, in)
+		return srv.(KFserviceServer).SolicitarHistorial(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.KFservice/SolicitarRegistroNodo",
+		FullMethod: "/grpc.KFservice/SolicitarHistorial",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KFserviceServer).SolicitarRegistroNodo(ctx, req.(*RegistroNodoRequest))
+		return srv.(KFserviceServer).SolicitarHistorial(ctx, req.(*HistorialRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -310,10 +276,6 @@ var KFservice_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _KFservice_SolicitarMovimiento_Handler,
 		},
 		{
-			MethodName: "ActualizarEstadoPiso",
-			Handler:    _KFservice_ActualizarEstadoPiso_Handler,
-		},
-		{
 			MethodName: "SolicitarMontoDineroMercenarioDirector",
 			Handler:    _KFservice_SolicitarMontoDineroMercenarioDirector_Handler,
 		},
@@ -326,8 +288,8 @@ var KFservice_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _KFservice_SolicitarRegistroDataName_Handler,
 		},
 		{
-			MethodName: "SolicitarRegistroNodo",
-			Handler:    _KFservice_SolicitarRegistroNodo_Handler,
+			MethodName: "SolicitarHistorial",
+			Handler:    _KFservice_SolicitarHistorial_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
