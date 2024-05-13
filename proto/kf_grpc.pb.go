@@ -26,6 +26,8 @@ type KFserviceClient interface {
 	SolicitarEntrarPiso(ctx context.Context, in *EntrarPisoRequest, opts ...grpc.CallOption) (*EntrarPisoResponse, error)
 	// SolicitarMovimiento es el método para solicitar un movimiento en el piso.
 	SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoResponse, error)
+	// SolicitarResultado es el método para solicitar el resultado del movimiento.
+	SolicitarResultado(ctx context.Context, in *MovimientoResponse, opts ...grpc.CallOption) (*ResultadoResponse, error)
 	// SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
 	SolicitarMontoDineroMercenarioDirector(ctx context.Context, in *MontoDineroMercenarioDirectorRequest, opts ...grpc.CallOption) (*MontoDineroResponse, error)
 	// SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
@@ -56,6 +58,15 @@ func (c *kFserviceClient) SolicitarEntrarPiso(ctx context.Context, in *EntrarPis
 func (c *kFserviceClient) SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoResponse, error) {
 	out := new(MovimientoResponse)
 	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarMovimiento", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kFserviceClient) SolicitarResultado(ctx context.Context, in *MovimientoResponse, opts ...grpc.CallOption) (*ResultadoResponse, error) {
+	out := new(ResultadoResponse)
+	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarResultado", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +117,8 @@ type KFserviceServer interface {
 	SolicitarEntrarPiso(context.Context, *EntrarPisoRequest) (*EntrarPisoResponse, error)
 	// SolicitarMovimiento es el método para solicitar un movimiento en el piso.
 	SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoResponse, error)
+	// SolicitarResultado es el método para solicitar el resultado del movimiento.
+	SolicitarResultado(context.Context, *MovimientoResponse) (*ResultadoResponse, error)
 	// SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
 	SolicitarMontoDineroMercenarioDirector(context.Context, *MontoDineroMercenarioDirectorRequest) (*MontoDineroResponse, error)
 	// SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
@@ -126,6 +139,9 @@ func (UnimplementedKFserviceServer) SolicitarEntrarPiso(context.Context, *Entrar
 }
 func (UnimplementedKFserviceServer) SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarMovimiento not implemented")
+}
+func (UnimplementedKFserviceServer) SolicitarResultado(context.Context, *MovimientoResponse) (*ResultadoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarResultado not implemented")
 }
 func (UnimplementedKFserviceServer) SolicitarMontoDineroMercenarioDirector(context.Context, *MontoDineroMercenarioDirectorRequest) (*MontoDineroResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarMontoDineroMercenarioDirector not implemented")
@@ -184,6 +200,24 @@ func _KFservice_SolicitarMovimiento_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(KFserviceServer).SolicitarMovimiento(ctx, req.(*MovimientoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KFservice_SolicitarResultado_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MovimientoResponse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KFserviceServer).SolicitarResultado(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.KFservice/SolicitarResultado",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KFserviceServer).SolicitarResultado(ctx, req.(*MovimientoResponse))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -274,6 +308,10 @@ var KFservice_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SolicitarMovimiento",
 			Handler:    _KFservice_SolicitarMovimiento_Handler,
+		},
+		{
+			MethodName: "SolicitarResultado",
+			Handler:    _KFservice_SolicitarResultado_Handler,
 		},
 		{
 			MethodName: "SolicitarMontoDineroMercenarioDirector",
