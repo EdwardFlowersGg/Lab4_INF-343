@@ -53,6 +53,7 @@ message MovimientoRequest{
   string nombre = 2; // El nombre.
   int32 piso = 3;    // El Piso a cual entrar
   int32 mov = 4;     // Movimiento del jugador
+  int32 vidas = 5; // vidas del jugador.
 }
 
 message JugarRequest {
