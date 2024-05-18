@@ -44,6 +44,8 @@ message EntrarPisoResponse {
 // MovimientoResponse es el resultado de un movimiento.
 message MovimientoResponse {
       bool success = 1; // Vive o Muere.
+      int32 vidas = 2;
+      int32 rondas = 3;
 }
 // MovimientoRequest es la solicitud para un movimiento en el piso.
 message MovimientoRequest{
