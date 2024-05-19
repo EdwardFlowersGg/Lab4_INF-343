@@ -28,6 +28,8 @@ type KFserviceClient interface {
 	SolicitarMovimiento(ctx context.Context, in *MovimientoRequest, opts ...grpc.CallOption) (*MovimientoResponse, error)
 	// SolicitarJugar es el método para solicitar el resultado del movimiento.
 	SolicitarResultado(ctx context.Context, in *JugarRequest, opts ...grpc.CallOption) (*JugarResponse, error)
+	// SolicitarFinal es el método para solicitar el resultado Final de juego.
+	SolicitarFinal(ctx context.Context, in *FinalRequest, opts ...grpc.CallOption) (*FinalResponse, error)
 	// SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
 	SolicitarMontoDineroMercenarioDirector(ctx context.Context, in *MontoDineroMercenarioDirectorRequest, opts ...grpc.CallOption) (*MontoDineroResponse, error)
 	// SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
@@ -67,6 +69,15 @@ func (c *kFserviceClient) SolicitarMovimiento(ctx context.Context, in *Movimient
 func (c *kFserviceClient) SolicitarResultado(ctx context.Context, in *JugarRequest, opts ...grpc.CallOption) (*JugarResponse, error) {
 	out := new(JugarResponse)
 	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarResultado", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kFserviceClient) SolicitarFinal(ctx context.Context, in *FinalRequest, opts ...grpc.CallOption) (*FinalResponse, error) {
+	out := new(FinalResponse)
+	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarFinal", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +130,8 @@ type KFserviceServer interface {
 	SolicitarMovimiento(context.Context, *MovimientoRequest) (*MovimientoResponse, error)
 	// SolicitarJugar es el método para solicitar el resultado del movimiento.
 	SolicitarResultado(context.Context, *JugarRequest) (*JugarResponse, error)
+	// SolicitarFinal es el método para solicitar el resultado Final de juego.
+	SolicitarFinal(context.Context, *FinalRequest) (*FinalResponse, error)
 	// SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
 	SolicitarMontoDineroMercenarioDirector(context.Context, *MontoDineroMercenarioDirectorRequest) (*MontoDineroResponse, error)
 	// SolicitarMontoDineroDirectorBanco es el método para solicitar el monto de dinero actual entre el director y el banco.
@@ -142,6 +155,9 @@ func (UnimplementedKFserviceServer) SolicitarMovimiento(context.Context, *Movimi
 }
 func (UnimplementedKFserviceServer) SolicitarResultado(context.Context, *JugarRequest) (*JugarResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarResultado not implemented")
+}
+func (UnimplementedKFserviceServer) SolicitarFinal(context.Context, *FinalRequest) (*FinalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarFinal not implemented")
 }
 func (UnimplementedKFserviceServer) SolicitarMontoDineroMercenarioDirector(context.Context, *MontoDineroMercenarioDirectorRequest) (*MontoDineroResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarMontoDineroMercenarioDirector not implemented")
@@ -218,6 +234,24 @@ func _KFservice_SolicitarResultado_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(KFserviceServer).SolicitarResultado(ctx, req.(*JugarRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KFservice_SolicitarFinal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KFserviceServer).SolicitarFinal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.KFservice/SolicitarFinal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KFserviceServer).SolicitarFinal(ctx, req.(*FinalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -312,6 +346,10 @@ var KFservice_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SolicitarResultado",
 			Handler:    _KFservice_SolicitarResultado_Handler,
+		},
+		{
+			MethodName: "SolicitarFinal",
+			Handler:    _KFservice_SolicitarFinal_Handler,
 		},
 		{
 			MethodName: "SolicitarMontoDineroMercenarioDirector",

@@ -15,6 +15,10 @@ service KFservice {
   // SolicitarJugar es el método para solicitar el resultado del movimiento.
   rpc SolicitarResultado(JugarRequest) returns (JugarResponse);
 
+  // SolicitarFinal es el método para solicitar el resultado Final de juego.
+  rpc SolicitarFinal(FinalRequest) returns (FinalResponse);
+
+
   // SolicitarMontoDineroMercenarioDirector es el método para solicitar el monto de dinero actual entre el mercenario y el director.
   rpc SolicitarMontoDineroMercenarioDirector(MontoDineroMercenarioDirectorRequest) returns (MontoDineroResponse);
 
@@ -64,6 +68,15 @@ message JugarResponse {
   bool success = 1; // vivo true, muerto false.
 }
 
+message FinalRequest {
+  int32 iD = 1;      // El identificador.
+  string nombre = 2; // El nombre.
+  bool success = 3; // vivo true, muerto false.
+}
+
+message FinalResponse {
+  bool success = 1; // vivo true, muerto false.
+}
 
 // MontoDineroMercenarioDirectorRequest es la solicitud para obtener el monto de dinero entre el mercenario y el director.
 message MontoDineroMercenarioDirectorRequest {
