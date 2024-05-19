@@ -36,8 +36,12 @@ type KFserviceClient interface {
 	SolicitarMontoDineroDirectorBanco(ctx context.Context, in *MontoDineroDirectorBancoRequest, opts ...grpc.CallOption) (*MontoDineroResponse, error)
 	// SolicitarRegistroDataName es el método para solicitar registro de DataName.
 	SolicitarRegistroDataName(ctx context.Context, in *RegistroDataNameRequest, opts ...grpc.CallOption) (*RegistroDataNameResponse, error)
-	// SolicitarRegistroNodo es el método para solicitar registro a nodo.
-	SolicitarHistorial(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error)
+	// SolicitarRegistroNodo es el metodo para registrar el movimiento en un datanode
+	SolicitarRegistrNodo(ctx context.Context, in *RegistroNodoRequest, opts ...grpc.CallOption) (*RegistroNodoResponse, error)
+	// SolicitarHistorialNameNode es el método para solicitar registro a nodo.
+	SolicitarHistorialNameNode(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error)
+	// SolicitarHistorialDataNode es el método para solicitar registro a nodo.
+	SolicitarHistorialDataNode(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error)
 }
 
 type kFserviceClient struct {
@@ -111,9 +115,27 @@ func (c *kFserviceClient) SolicitarRegistroDataName(ctx context.Context, in *Reg
 	return out, nil
 }
 
-func (c *kFserviceClient) SolicitarHistorial(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error) {
+func (c *kFserviceClient) SolicitarRegistrNodo(ctx context.Context, in *RegistroNodoRequest, opts ...grpc.CallOption) (*RegistroNodoResponse, error) {
+	out := new(RegistroNodoResponse)
+	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarRegistrNodo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kFserviceClient) SolicitarHistorialNameNode(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error) {
 	out := new(HistorialResponse)
-	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarHistorial", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarHistorialNameNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kFserviceClient) SolicitarHistorialDataNode(ctx context.Context, in *HistorialRequest, opts ...grpc.CallOption) (*HistorialResponse, error) {
+	out := new(HistorialResponse)
+	err := c.cc.Invoke(ctx, "/grpc.KFservice/SolicitarHistorialDataNode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +160,12 @@ type KFserviceServer interface {
 	SolicitarMontoDineroDirectorBanco(context.Context, *MontoDineroDirectorBancoRequest) (*MontoDineroResponse, error)
 	// SolicitarRegistroDataName es el método para solicitar registro de DataName.
 	SolicitarRegistroDataName(context.Context, *RegistroDataNameRequest) (*RegistroDataNameResponse, error)
-	// SolicitarRegistroNodo es el método para solicitar registro a nodo.
-	SolicitarHistorial(context.Context, *HistorialRequest) (*HistorialResponse, error)
+	// SolicitarRegistroNodo es el metodo para registrar el movimiento en un datanode
+	SolicitarRegistrNodo(context.Context, *RegistroNodoRequest) (*RegistroNodoResponse, error)
+	// SolicitarHistorialNameNode es el método para solicitar registro a nodo.
+	SolicitarHistorialNameNode(context.Context, *HistorialRequest) (*HistorialResponse, error)
+	// SolicitarHistorialDataNode es el método para solicitar registro a nodo.
+	SolicitarHistorialDataNode(context.Context, *HistorialRequest) (*HistorialResponse, error)
 	mustEmbedUnimplementedKFserviceServer()
 }
 
@@ -168,8 +194,14 @@ func (UnimplementedKFserviceServer) SolicitarMontoDineroDirectorBanco(context.Co
 func (UnimplementedKFserviceServer) SolicitarRegistroDataName(context.Context, *RegistroDataNameRequest) (*RegistroDataNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarRegistroDataName not implemented")
 }
-func (UnimplementedKFserviceServer) SolicitarHistorial(context.Context, *HistorialRequest) (*HistorialResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SolicitarHistorial not implemented")
+func (UnimplementedKFserviceServer) SolicitarRegistrNodo(context.Context, *RegistroNodoRequest) (*RegistroNodoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarRegistrNodo not implemented")
+}
+func (UnimplementedKFserviceServer) SolicitarHistorialNameNode(context.Context, *HistorialRequest) (*HistorialResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarHistorialNameNode not implemented")
+}
+func (UnimplementedKFserviceServer) SolicitarHistorialDataNode(context.Context, *HistorialRequest) (*HistorialResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarHistorialDataNode not implemented")
 }
 func (UnimplementedKFserviceServer) mustEmbedUnimplementedKFserviceServer() {}
 
@@ -310,20 +342,56 @@ func _KFservice_SolicitarRegistroDataName_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _KFservice_SolicitarHistorial_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _KFservice_SolicitarRegistrNodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegistroNodoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KFserviceServer).SolicitarRegistrNodo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.KFservice/SolicitarRegistrNodo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KFserviceServer).SolicitarRegistrNodo(ctx, req.(*RegistroNodoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KFservice_SolicitarHistorialNameNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HistorialRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KFserviceServer).SolicitarHistorial(ctx, in)
+		return srv.(KFserviceServer).SolicitarHistorialNameNode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.KFservice/SolicitarHistorial",
+		FullMethod: "/grpc.KFservice/SolicitarHistorialNameNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KFserviceServer).SolicitarHistorial(ctx, req.(*HistorialRequest))
+		return srv.(KFserviceServer).SolicitarHistorialNameNode(ctx, req.(*HistorialRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KFservice_SolicitarHistorialDataNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HistorialRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KFserviceServer).SolicitarHistorialDataNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.KFservice/SolicitarHistorialDataNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KFserviceServer).SolicitarHistorialDataNode(ctx, req.(*HistorialRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -364,8 +432,16 @@ var KFservice_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _KFservice_SolicitarRegistroDataName_Handler,
 		},
 		{
-			MethodName: "SolicitarHistorial",
-			Handler:    _KFservice_SolicitarHistorial_Handler,
+			MethodName: "SolicitarRegistrNodo",
+			Handler:    _KFservice_SolicitarRegistrNodo_Handler,
+		},
+		{
+			MethodName: "SolicitarHistorialNameNode",
+			Handler:    _KFservice_SolicitarHistorialNameNode_Handler,
+		},
+		{
+			MethodName: "SolicitarHistorialDataNode",
+			Handler:    _KFservice_SolicitarHistorialDataNode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

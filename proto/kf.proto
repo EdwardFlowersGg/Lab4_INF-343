@@ -28,8 +28,14 @@ service KFservice {
   // SolicitarRegistroDataName es el método para solicitar registro de DataName.
   rpc SolicitarRegistroDataName(RegistroDataNameRequest) returns (RegistroDataNameResponse);
 
-  // SolicitarRegistroNodo es el método para solicitar registro a nodo.
-  rpc SolicitarHistorial(HistorialRequest) returns (HistorialResponse);
+  //  SolicitarRegistroNodo es el metodo para registrar el movimiento en un datanode
+  rpc SolicitarRegistrNodo(RegistroNodoRequest) returns (RegistroNodoResponse);
+
+  // SolicitarHistorialNameNode es el método para solicitar registro a nodo.
+  rpc SolicitarHistorialNameNode(HistorialRequest) returns (HistorialResponse);
+
+  // SolicitarHistorialDataNode es el método para solicitar registro a nodo.
+  rpc SolicitarHistorialDataNode(HistorialRequest) returns (HistorialResponse);
 }
 
 // EntrarPisoRequest es la solicitud para entrar al piso.
@@ -112,7 +118,7 @@ message RegistroNodoRequest {
 
 // RegistroNodoResponse es la respuesta a la solicitud de registro de un nodo.
 message RegistroNodoResponse {
-  int32 puerto = 1; // True si el registro fue exitoso, false en caso contrario.
+  bool success = 1; // True si el registro fue exitoso, false en caso contrario.
 }
 
 
@@ -126,7 +132,8 @@ message HistorialRequest {
 message HistorialResponse {
   int32 iD = 1;      // El identificador.
   string nombre = 2; // El nombre.
-  int32 mov = 3;       // movimiento
+  int32 mov = 3;     // Movimiento.
+  repeated string elementos = 4; // Array de strings.
 }
 
 
